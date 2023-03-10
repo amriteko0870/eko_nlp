@@ -1,0 +1,88 @@
+{
+    "config": {
+      "bg_image": "",
+      "primary_color": "#17286d",
+      "secondary_color": "",
+      "total_time": 5000
+    },
+    "welcome_screen": {
+      "logo": "",
+      "heading": "Net Promoter Score Survey",
+      "sub_text": "",
+      "start_button_text": "Start Survey"
+    },
+    "contents": [
+      {
+        "question": "Name",
+        "type": "small_text",
+        "answer": "",
+        "important": true,
+        "status":true
+      },
+      {
+        "question": "Gender",
+        "type": "list",
+        "options": [
+          "Male",
+          "Female",
+          "Other",
+          "Prefer not to say"
+        ],
+        "answer": "",
+        "important": true,
+        "status":true
+      },
+      {
+        "question": "Email",
+        "type": "email",
+        "answer": "",
+        "important": true,
+        "status":true
+      },
+      {
+        "question": "Age",
+        "type": "number",
+        "answer": "",
+        "important": true,
+        "status":true
+      },
+      {
+        "question": "Phone Number",
+        "type": "number",
+        "answer": "",
+        "important": true,
+        "status":true
+      },
+      {
+        "question": "On a scale of 0 to 10, how likely are you to recommend our company/product/service to a friend or colleague?",
+        "type": "range",
+        "start_and_end_word": [
+          "Not likely at all",
+          "Extremely likely"
+        ],
+        "answer": ""
+      },
+      {
+        "question": " In your opinion, what improvements could the company make that would warrant a higher rating from you? ",
+        "type": "textarea",
+        "answer": ""
+      },
+      {
+        "question": "How well our service meets your needs?",
+        "type": "list",
+        "options": [
+          "Extremely well",
+          "Very well",
+          "Somewhat well",
+          "Not so well",
+          "Not at all well"
+        ],
+        "answer": ""
+      },
+      {
+        "question": "How would you rate our quality of service?",
+        "type": "star",
+        "answer": ""
+      }
+    ]
+  }
