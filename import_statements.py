@@ -38,3 +38,7 @@ from apiAppAuth.models import user_data
 from apiApp.models import survey_templates
 from apiApp.models import user_surveys
 from apiApp.models import survey_response
+from apiApp.models import email_list
+
+#---------------------------- Extra -------------------------------------------------
+from apiApp.email import sendEmailFunc

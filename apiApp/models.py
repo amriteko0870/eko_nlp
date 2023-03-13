@@ -26,3 +26,7 @@ class survey_response(models.Model):
     survey_id = models.TextField()
     survey = models.TextField()
     creation_date_time = models.TextField(default=str(datetime.now(pytz.timezone("Asia/Kolkata"))))
+
+class email_list(models.Model):
+    email = models.TextField()
+    user_id = models.TextField()

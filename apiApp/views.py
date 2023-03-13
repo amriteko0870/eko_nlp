@@ -55,12 +55,19 @@ def userViewSurvey(request):
         return Response(res)
     survey_id = data['survey_id']
     obj = user_surveys.objects.filter(id = survey_id).values()
-    obj = pd.DataFrame(obj)
-    obj['survey'] = obj['survey'].apply(lambda x : eval(x))
-    obj['config'] = obj['config'].apply(lambda x : eval(x))
-    obj['welcome_screen'] = obj['welcome_screen'].apply(lambda x : eval(x))
-    obj = obj.to_dict(orient='records')[0]
-    return Response(obj)
+    if len(obj) == 0:
+        res = {
+                'status':False,
+                'message':'Survey does not exist'
+              }
+        return Response(res)
+    else:
+        obj = pd.DataFrame(obj)
+        obj['survey'] = obj['survey'].apply(lambda x : eval(x))
+        obj['config'] = obj['config'].apply(lambda x : eval(x))
+        obj['welcome_screen'] = obj['welcome_screen'].apply(lambda x : eval(x))
+        obj = obj.to_dict(orient='records')[0]
+        return Response(obj)
 
 @api_view(['POST'])
 def userListViewSurvey(request):
@@ -98,7 +105,11 @@ def publicSurvey(request):
         obj['survey'] = obj['survey'].apply(lambda x : eval(x))
         obj['config'] = obj['config'].apply(lambda x : eval(x))
         obj['welcome_screen'] = obj['welcome_screen'].apply(lambda x : eval(x))
+        obj = obj[['survey','config','welcome_screen','thank_you_screen']]
         obj = obj.to_dict(orient='records')[0]
+        obj['thank_you_screen'] =  {
+                                    'message': "Thank you for your time!",
+                                    }
         return Response(obj)
     else:
         res = {
@@ -115,4 +126,154 @@ def publicSurveyResponse(request):
                                 survey = data['survey']
                              )
     res_obj.save()
+    res = {
+            'status':True,
+            'message':'Response submitted'
+    }
     return Response(data)
+@api_view(['POST'])
+def viewResponseData(request):
+    data = request.data
+    token = data['token']
+    try:
+        user = user_data.objects.get(uid = token)
+    except:
+        res = {
+                'status':False,
+                'message':'Authentication Failed'
+              }
+        return Response(res)
+    res = {}
+    survey_id = data['survey_id']
+    survey_obj = survey_response.objects.filter(survey_id = survey_id).values('survey')
+    if len(survey_obj) == 0:
+        res = {
+                'status':False,
+                'message':'No surveys found'
+              }
+        return Response(res)
+    survey_obj = pd.DataFrame(survey_obj)
+    survey_obj['all_answers'] = survey_obj['survey'].apply(lambda x : eval(x))
+    survey_obj = survey_obj[['all_answers']].to_dict(orient='records')
+    res['answers'] = survey_obj
+    questions = pd.DataFrame(survey_obj[0]['all_answers'])['question']
+    res['questions'] = questions
+
+    config = {
+                'rows': len(survey_obj),
+                'column': len(questions),
+             }
+    res['config'] = config
+    return Response(res)
+
+@api_view(['POST'])
+def addEmailToUser(request):
+    data = request.data
+    token = data['token']
+    try:
+        user = user_data.objects.get(uid = token)
+    except:
+        res = {
+                'status':False,
+                'message':'Authentication Failed'
+              }
+        return Response(res)
+    email = data['email']
+    emails = email_list.objects.filter(user_id = user.id).values_list('email',flat=True)
+    if email == '':
+        res = {
+                'status':False,
+                'message':'Invalid Email'
+              }
+        return Response(res)
+    if email in emails:
+        res = {
+                'status':False,
+                'message':'Email already in address book'
+              }
+        return Response(res)
+    email_obj = email_list(
+                            user_id = user.id,
+                            email = email,
+                          )
+    email_obj.save()
+    res = {
+            'status':True,
+            'message':'Email added to address book'
+            }
+    return Response(res)
+
+@api_view(['POST'])
+def getEmailListOfUser(request):
+    data = request.data
+    token = data['token']
+    try:
+        user = user_data.objects.get(uid = token)
+    except:
+        res = {
+                'status':False,
+                'message':'Authentication Failed'
+              }
+        return Response(res)
+    emails = email_list.objects.filter(user_id = user.id).values_list('email',flat=True)
+    res = {
+            'status':True,
+            'message':'Email list generated',
+            'email_list':emails
+            }
+    return Response(res)
+
+@api_view(['POST'])
+def deleteEmailFromUser(request):
+    data = request.data
+    token = data['token']
+    try:
+        user = user_data.objects.get(uid = token)
+    except:
+        res = {
+                'status':False,
+                'message':'Authentication Failed'
+              }
+        return Response(res)
+    email = data['email']
+    emails = email_list.objects.filter(user_id = user.id).values_list('email',flat=True)
+    if email not in emails:
+        res = {
+                'status':False,
+                'message':'Email does not exist'
+              }
+        return Response(res)
+    email_list.objects.filter(user_id = user.id,email = email).delete()
+    res = {
+            'status':True,
+            'message':'Email deleted successfully',
+            }
+    return Response(res)
+
+@api_view(['POST'])
+def sendEmail(request):
+    data = request.data
+    token = data['token']
+    try:
+        user = user_data.objects.get(uid = token)
+    except:
+        res = {
+                'status':False,
+                'message':'Authentication Failed'
+              }
+        return Response(res)
+    emails = data['emails']
+    subject = data['subject']
+    msg = data['message']
+    send_email = sendEmailFunc(emails,subject,msg)
+    if send_email:
+        res = {
+                'status':True,
+                'message':'Email sent successfully'
+              }
+    else:
+        res = {
+                'status':False,
+                'message':'Something went wrong'
+              }
+    return Response(res)

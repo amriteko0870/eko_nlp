@@ -14,5 +14,10 @@ urlpatterns = [
     path('userListViewSurvey',views.userListViewSurvey,name='userListViewSurvey'),   
     path('publicSurvey',views.publicSurvey,name='publicSurvey'),   
     path('publicSurveyResponse',views.publicSurveyResponse,name='publicSurveyResponse'),   
+    path('viewResponseData',views.viewResponseData,name='viewResponseData'),   
+    path('addEmailToUser',views.addEmailToUser,name='addEmailToUser'),   
+    path('getEmailListOfUser',views.getEmailListOfUser,name='getEmailListOfUser'),   
+    path('deleteEmailFromUser',views.deleteEmailFromUser,name='deleteEmailFromUser'),   
+    path('sendEmail',views.sendEmail,name='sendEmail'),   
 
 ] +static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
