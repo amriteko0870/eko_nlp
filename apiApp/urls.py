@@ -19,5 +19,6 @@ urlpatterns = [
     path('getEmailListOfUser',views.getEmailListOfUser,name='getEmailListOfUser'),   
     path('deleteEmailFromUser',views.deleteEmailFromUser,name='deleteEmailFromUser'),   
     path('sendEmail',views.sendEmail,name='sendEmail'),   
+    path('npsCalculate',views.npsCalculate,name='npsCalculate'),   
 
 ] +static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)

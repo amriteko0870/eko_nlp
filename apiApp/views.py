@@ -277,3 +277,21 @@ def sendEmail(request):
                 'message':'Something went wrong'
               }
     return Response(res)
+
+@api_view(['POST'])
+def npsCalculate(request):
+    data = request.data
+    survey_id = data['survey_id']
+    survey_obj = survey_response.objects.filter(survey_id = survey_id).values('survey')
+    if len(survey_obj) == 0:
+        res = {
+                'status':False,
+                'message':'No surveys found'
+              }
+        return Response(res)
+    survey_obj = pd.DataFrame(survey_obj)
+    survey_obj['all_answers'] = survey_obj['survey'].apply(lambda x : eval(x))
+    survey_obj['nps'] = survey_obj['all_answers'].apply(lambda x : x[5]['answer'] if x[5]['answer'] != "" else 0)
+    res = {}
+    res['answers'] = list(survey_obj['nps'])
+    return Response(res)
